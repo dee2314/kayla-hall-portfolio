@@ -100,7 +100,8 @@ const GLOBAL_CSS = `
     --shadow: 0 20px 60px rgba(0,0,0,0.45);
     --nav-bg: rgba(33,24,20,0.86);
   }
-  .khp *{box-sizing:border-box;}
+  .khp *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  .khp button, .khp a{ -webkit-tap-highlight-color:transparent; }
   .khp{
     background:var(--ivory);
     color:var(--espresso);
@@ -148,7 +149,7 @@ const GLOBAL_CSS = `
 
   /* ---- nav ---- */
   .khp-nav{
-    position:fixed; top:0; left:0; right:0; z-index:50;
+    position:fixed; top:0; left:0; right:0; z-index:1010;
     display:flex; align-items:center; justify-content:space-between;
     padding:20px clamp(20px,5vw,56px);
     transition:background .35s ease, box-shadow .35s ease, padding .35s ease;
@@ -510,7 +511,6 @@ const GLOBAL_CSS = `
     .khp-burger{ display:flex; }
     .khp-menu-backdrop{ display:none; }
     .khp-menu-backdrop.open{ display:block; position:fixed; inset:0; background:rgba(0,0,0,0.35); z-index:1000; }
-    .khp-menu-close{ position:absolute; top:20px; right:20px; background:none; border:none; padding:8px; color:var(--espresso); }
   }
 `;
 
@@ -1152,6 +1152,28 @@ export default function KaylaHallPortfolio() {
   }, []);
 
   useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [menuOpen]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const closeOnScroll = () => setMenuOpen(false);
+    window.addEventListener("scroll", closeOnScroll, { passive: true });
+    window.addEventListener("touchmove", closeOnScroll, { passive: true });
+    window.addEventListener("wheel", closeOnScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", closeOnScroll);
+      window.removeEventListener("touchmove", closeOnScroll);
+      window.removeEventListener("wheel", closeOnScroll);
+    };
+  }, [menuOpen]);
+
+  useEffect(() => {
     const sections = NAV.map((n) => document.getElementById(n.id)).filter(Boolean);
     const io = new IntersectionObserver(
       (entries) => {
@@ -1212,9 +1234,6 @@ export default function KaylaHallPortfolio() {
         <button className="khp-logo script" onClick={() => scrollTo("hero")} aria-label="Back to top">KH</button>
         <div style={{ display: "flex", alignItems: "center", gap: 14, marginLeft: "auto" }}>
           <div className={`khp-dots ${menuOpen ? "open" : ""}`}>
-            <button className="khp-menu-close" onClick={() => setMenuOpen(false)} aria-label="Close menu">
-              <X size={22} />
-            </button>
             {NAV.map((n) => (
               <button key={n.id} className={`khp-dot-item ${active === n.id ? "active" : ""}`} onClick={() => { scrollTo(n.id); setMenuOpen(false); }}>
                 <span className="khp-dot" />
