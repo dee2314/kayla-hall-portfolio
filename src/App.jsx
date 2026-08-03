@@ -173,7 +173,7 @@ const GLOBAL_CSS = `
     max-width:0; overflow:hidden; white-space:nowrap; opacity:0; transition:all .3s ease;
   }
   .khp-dot-item.active .khp-dot-label{ max-width:140px; opacity:1; color:var(--rosewood); }
-  .khp-burger{ display:none; background:none; border:none; }
+  .khp-burger{ display:none; background:none; border:none; position:relative; z-index:1002; }
 
   /* ---- theme toggle ---- */
   .khp-theme-toggle{
@@ -504,10 +504,13 @@ const GLOBAL_CSS = `
     .khp-masonry{ grid-template-columns:1fr; }
     .khp-stat-grid{ grid-template-columns:1fr 1fr; }
     .khp-nav .khp-dots{ position:fixed; top:0; right:0; bottom:0; background:var(--ivory); flex-direction:column;
-      justify-content:center; padding:40px; transform:translateX(100%); transition:transform .4s ease; width:min(78vw,320px); box-shadow:-10px 0 40px rgba(0,0,0,0.1); }
+      justify-content:center; padding:40px; transform:translateX(100%); transition:transform .4s ease; width:min(78vw,320px); box-shadow:-10px 0 40px rgba(0,0,0,0.1); z-index:1001; }
     .khp-nav .khp-dots.open{ transform:translateX(0); }
     .khp-nav .khp-dot-label{ display:inline; max-width:none; opacity:1; }
     .khp-burger{ display:flex; }
+    .khp-menu-backdrop{ display:none; }
+    .khp-menu-backdrop.open{ display:block; position:fixed; inset:0; background:rgba(0,0,0,0.35); z-index:1000; }
+    .khp-menu-close{ position:absolute; top:20px; right:20px; background:none; border:none; padding:8px; color:var(--espresso); }
   }
 `;
 
@@ -1204,12 +1207,16 @@ export default function KaylaHallPortfolio() {
       <div className="grain" />
 
       {/* NAV */}
+      <div className={`khp-menu-backdrop ${menuOpen ? "open" : ""}`} onClick={() => setMenuOpen(false)} />
       <nav className={`khp-nav ${scrolled ? "scrolled" : ""}`}>
         <button className="khp-logo script" onClick={() => scrollTo("hero")} aria-label="Back to top">KH</button>
         <div style={{ display: "flex", alignItems: "center", gap: 14, marginLeft: "auto" }}>
           <div className={`khp-dots ${menuOpen ? "open" : ""}`}>
+            <button className="khp-menu-close" onClick={() => setMenuOpen(false)} aria-label="Close menu">
+              <X size={22} />
+            </button>
             {NAV.map((n) => (
-              <button key={n.id} className={`khp-dot-item ${active === n.id ? "active" : ""}`} onClick={() => scrollTo(n.id)}>
+              <button key={n.id} className={`khp-dot-item ${active === n.id ? "active" : ""}`} onClick={() => { scrollTo(n.id); setMenuOpen(false); }}>
                 <span className="khp-dot" />
                 <span className="khp-dot-label">{n.label}</span>
               </button>
