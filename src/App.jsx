@@ -155,7 +155,7 @@ const GLOBAL_CSS = `
     transition:background .35s ease, box-shadow .35s ease, padding .35s ease;
   }
   .khp-nav.scrolled{
-    background:var(--nav-bg); backdrop-filter:blur(10px);
+    background:var(--nav-bg);
     box-shadow:0 1px 0 var(--line); padding:12px clamp(20px,5vw,56px);
   }
   .khp-logo{
